@@ -67,3 +67,4 @@ cd /root
 # Exemplo do programa rodando na placa:![imagem](assets/codigo.jpeg)
 
 
+Esta foto está borrada, como já falado pessoalmente, e para nao ser necessario montar todo o circuito novamente a estou enviando. Nela encontrasse a mesma porta vista na foto que contem os pacotes UDP porta: 45200 comprovando que que a leitura no terminal é a mesma feita no wireshark
