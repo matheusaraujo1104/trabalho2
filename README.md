@@ -67,4 +67,92 @@ cd /root
 # Exemplo do programa rodando na placa:![imagem](assets/codigo.jpeg)
 
 
-Esta foto está borrada, como já falado pessoalmente, e para nao ser necessario montar todo o circuito novamente a estou enviando. Nela encontrasse a mesma porta vista na foto que contem os pacotes UDP porta: 45200 comprovando que que a leitura no terminal é a mesma feita no wireshark
+
+### 6. Sistema Embarcado: Procedimentos de Verificação e Comunicação UDP
+
+Este tutorial aborda a implementação e validação do Cliente na Placa Embarcada, cuja função é transmitir leituras do sensor para o Host Windows (192.168.42.10:8080).
+
+#### 6.1. Definições de Rede Cruciais
+
+Cliente e Servidor (Host Windows) precisam compartilhar a mesma sub-rede para estabelecer comunicação:
+
+| Componente | Endereço IP | Porta UDP | Referência no Código do Cliente |
+| :--- | :--- | :--- | :--- |
+| *Cliente* (Placa Embarcada) | 192.168.42.2 | 8080 (Saída) | Configurado para enviar para 192.168.42.10 |
+| *Servidor* (Windows Host) | 192.168.42.10 | 8080 (Entrada) | Alvo dos pacotes UDP. |
+
+#### 6.2. Operação do Cliente
+
+1.  *Compilação:* Compile o arquivo clienteUDP_sensor_ldr.cpp na Placa Embarcada (ambientes Linux/POSIX). As correções de conversão já foram implementadas.
+2.  *Ativação:* Execute o Cliente na Placa. O sistema iniciará o envio de pacotes UDP em intervalos de um segundo para o Host Windows.
+    ```bash
+    ./clienteUDP_sensor_ldr
+    ```
+    Comportamento esperado: O terminal da Placa exibirá mensagens confirmando o envio para 192.168.42.10:8080.
+
+#### 6.3. Verificação do Envio de Dados (Utilitários de Rede)
+
+Para confirmar se os pacotes do Cliente estão sendo transmitidos pela Placa e alcançando a interface de rede do Windows, utilize ncat.exe, Wireshark ou um Programa Servidor de coleta.
+
+##### 6.3.1. Verificação com ncat (Teste de Captura)
+    
+O ncat atua como um "servidor de verificação" básico para confirmar se os pacotes atravessam o Firewall.
+    
+1.  *No PowerShell/CMD do Windows Host* (diretório do ncat.exe):
+    ```powershell
+    .\ncat.exe -ulnv 8080
+    ```
+    Este comando aguarda (-l) conexões UDP (-u) na porta 8080 com modo detalhado (-v).
+2.  *Ative o Cliente* na Placa.
+
+###### Interpretação do Resultado do ncat:
+
+| Comportamento do ncat (Windows Host) | Diagnóstico | Medida Corretiva |
+| :--- | :--- | :--- |
+| *Captura os dados (ex: '45', '100')* | Cliente operando corretamente e rede funcional. | O problema está restrito ao código/compilação do Servidor C++. |
+| *NÃO captura dados* | O pacote está sendo bloqueado antes de alcançar o aplicativo. | *Próximo passo:* Vá para a Seção 6.3.3 (Firewall/Wireshark). |
+
+##### 6.3.2. Verificação com Wireshark (Teste de Recepção)
+    
+O Wireshark confirma se o pacote UDP está efetivamente chegando à *interface de rede* do Windows (192.168.42.10).
+    
+1.  *No Windows Host:* Abra o Wireshark.
+2.  Selecione a *Interface de Rede* com o IP 192.168.42.10.
+3.  Aplique o filtro: `udp and port 8080`.
+4.  *Inicie o Cliente* na Placa.
+
+###### Análise do Wireshark:
+
+* *Se o Wireshark EXIBIR os pacotes:* A transmissão está alcançando o Windows. O Firewall do Windows está impedindo a entrega ao ncat (ou Servidor).
+* *Se o Wireshark NÃO EXIBIR os pacotes:* A transmissão não está partindo da Placa ou existe uma falha de conectividade física (cabos/configurações de IP).
+
+##### 6.3.3. Resolução do Firewall (Se Pacote Chegar, mas ncat Bloquear)
+    
+Caso o Wireshark detecte os pacotes, mas o ncat não os receba:
+    
+1.  *Desabilitação Temporária:* Desative temporariamente o Firewall do Windows Host. Se a comunicação for estabelecida, o Firewall é a causa.
+2.  *Solução Permanente:* Crie uma regra de Firewall de *Entrada (Inbound)* para o protocolo *UDP* na porta *8080*.
+
+##### 6.3.4. Desenvolvimento de um Servidor de Recebimento
+    
+Para uma solução de monitoração contínua no Host Windows, desenvolva um servidor UDP simples em C, C++ ou Python.
+    
+| Linguagem | Vantagens | Biblioteca Principal |
+| :--- | :--- | :--- |
+| *Python* | Ideal para prototipagem ágil e visualização. | socket |
+| *C/C++* | Máximo desempenho e controle granular. | Windows Sockets (winsock2.h) |
+
+O servidor deve:
+    
+1.  Criar um socket UDP (SOCK_DGRAM).
+2.  Vincular (bind) o socket ao endereço 192.168.42.10 (ou 0.0.0.0) e à porta 8080.
+3.  Entrar em um loop contínuo, utilizando recvfrom() ou similar para aguardar os datagramas do Cliente.
+4.  Converter os dados recebidos (string/ASCII) de volta para valores numéricos para análise.
+
+
+# Exemplo do programa rodando na placa:![imagem](assets/codigo2.jpeg)
+
+
+# Exemplo do programa rodando na placa:![imagem](assets/udp.jpeg)
+ 
+  Esta foto está borrada, como já falado pessoalmente, e para nao ser necessario montar todo o circuito novamente a estou enviando. Nela encontrasse a mesma porta vista na foto que contem os pacotes UDP porta: 45200 comprovando que que a leitura no terminal é a mesma feita no wireshark
