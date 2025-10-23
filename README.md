@@ -102,7 +102,7 @@ O ncat atua como um "servidor de verificação" básico para confirmar se os pac
     ```powershell
     .\ncat.exe -ulnv 8080
     ```
-    Este comando aguarda (-l) conexões UDP (-u) na porta 8080 com modo detalhado (-v).
+    Este comando aguarda (-l) conexões UDP (-u) na porta 45200 com modo detalhado (-v).
 2.  *Ative o Cliente* na Placa.
 
 ###### Interpretação do Resultado do ncat:
