@@ -7,11 +7,11 @@ import serial  # Biblioteca para ler a porta serial
 # =====================
 # CONFIGURAÇÃO SERIAL
 # =====================
-# Substitua 'COM3' pela porta correta da sua placa no Windows
-# Para ver a porta, abra o Gerenciador de Dispositivos → Portas (COM & LPT)
+
+
 SERIAL_PORT = "COM3"
 
-# Substitua 115200 pelo baud rate do seu programa na placa
+
 BAUD_RATE = 115200
 
 # Inicializa a conexão serial
@@ -19,7 +19,7 @@ try:
     ser = serial.Serial(SERIAL_PORT, BAUD_RATE, timeout=1)
 except Exception as e:
     print(f"Erro ao abrir a porta serial: {e}")
-    ser = None  # Se der erro, o programa ainda vai rodar mas com valores 0
+    ser = None  
 
 
 class SensorDashboard(QMainWindow):
@@ -44,7 +44,7 @@ class SensorDashboard(QMainWindow):
 
         # Gráfico
         self.plot_widget = pg.PlotWidget(title="Corrente ao longo do tempo")
-        self.plot_widget.setYRange(0, 100)  # ajuste conforme seu sensor
+        self.plot_widget.setYRange(0, 100)  
         self.layout.addWidget(self.plot_widget)
 
         self.data = []  # lista para guardar os últimos valores
