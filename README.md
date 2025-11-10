@@ -156,3 +156,83 @@ O servidor deve:
 # Exemplo do programa rodando na placa:![imagem](assets/udp.jpeg)
  
   Esta foto está borrada, como já falado pessoalmente, e para nao ser necessario montar todo o circuito novamente a estou enviando. Nela encontrasse a mesma porta vista na foto que contem os pacotes UDP porta: 45200 comprovando que que a leitura no terminal é a mesma feita no wireshark
+
+### 7. INTERFACE GRÁFICA
+# 🖥️ Implementação da Interface Gráfica do Sensor Dashboard
+
+## 🎯 Objetivo
+
+Desenvolver uma interface gráfica para exibir em tempo real os valores de corrente elétrica medidos por uma placa embarcada com sensor ACS712, permitindo visualizar os dados em formato numérico e em gráfico dinâmico.
+
+## ⚙️ Etapas da Implementação
+
+1.  **Criação do Ambiente de Desenvolvimento**
+    Criei uma pasta chamada `sensor-dashboard` no desktop.
+    Dentro dela, configurei um ambiente virtual Python (venv) para isolar as dependências do projeto:
+
+    ```bash
+    python -m venv venv
+    venv\Scripts\activate
+    ```
+
+    Instalei as bibliotecas necessárias:
+
+    ```bash
+    pip install pyqt5 pyqtgraph pyserial
+    ```
+
+2.  **Desenvolvimento do Código em Python**
+    Criei o arquivo `dashboard.py`, responsável pela interface gráfica e leitura da porta serial.
+    Principais componentes:
+
+    * **PyQt5** → criação da janela e dos elementos visuais.
+    * **PyQtGraph** → exibição do gráfico em tempo real.
+    * **PySerial** → comunicação com a placa embarcada via porta serial.
+
+    A interface exibe:
+
+    * Um rótulo com o valor atual da corrente (em Amperes).
+    * Um gráfico dinâmico mostrando a evolução da corrente ao longo do tempo.
+
+3.  **Integração com a Placa Embarcada**
+    A placa (com Linux embarcado) foi conectada via USB ao computador.
+    O programa em C++ (`acs712_reader.cpp`) foi compilado e executado na placa, enviando continuamente as leituras do sensor pela porta serial.
+    No Windows, identifiquei a porta serial (ex: `COM3`) no Gerenciador de Dispositivos.
+    No `dashboard.py`, configurei:
+
+    ```python
+    SERIAL_PORT = "COM3"
+    BAUD_RATE = 115200
+    ```
+
+4.  **Execução do Sistema**
+    Executei o programa da placa para iniciar o envio dos dados.
+    Fechei o WSL (para liberar a porta serial).
+    No CMD, entrei na pasta do projeto:
+
+    ```bash
+    cd C:\Users\timbu\Desktop\sensor-dashboard
+    venv\Scripts\activate
+    python dashboard.py
+    ```
+
+    O dashboard iniciou, exibindo a mensagem "Conectado!", e abriu uma janela mostrando os valores de corrente e o gráfico em tempo real.
+
+5.  **Testes e Validação**
+    * Verifiquei a atualização dos valores a cada segundo.
+    * Testei a estabilidade da comunicação serial.
+    * Ajustei o intervalo de atualização do gráfico para otimizar a visualização:
+
+    ```python
+    self.timer.setInterval(1000)  # 1 segundo
+    ```
+
+## ✅ Resultado Final
+
+Foi implementado um painel interativo e funcional para monitoramento da corrente elétrica em tempo real, integrando:
+
+* Leitura física do sensor ACS712 via placa embarcada.
+* Transmissão de dados pela porta serial.
+* Visualização dinâmica em um dashboard feito com Python, PyQt5 e PyQtGraph.
+
+* # RESULTADO:![imagem](assets/interfacegrafica.jpeg)
