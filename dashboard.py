@@ -51,7 +51,7 @@ class SensorDashboard(QMainWindow):
         self.x = list(range(50))  # eixo x fixo para últimos 50 pontos
         self.curve = self.plot_widget.plot(self.x, [0]*50, pen='g')
 
-        # Timer para atualizar o gráfico
+        # timer para atualizar o gráfico
         self.timer = QTimer()
         self.timer.setInterval(1000)  # 1 segundo
         self.timer.timeout.connect(self.update_plot)
